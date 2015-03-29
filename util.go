@@ -10,6 +10,6 @@ func (v *VerifiedEmail) CanonHeaders() string {
 	return strings.Join(canonHeaders, "")
 }
 
-func (v *VerifiedEmail) ExtractHeaders(name string) []string {
+func (v *VerifiedEmail) ExtractHeader(name string) []string {
 	return extractHeaders(v.Headers, []string{name})
 }

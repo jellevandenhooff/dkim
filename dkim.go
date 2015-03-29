@@ -15,8 +15,8 @@ const (
 
 type VerifiedEmail struct {
 	email     *email
-	signature *signature
-	headers   []string
+	Signature *Signature
+	Headers   []string
 }
 
 func extractHeaders(headers []string, names []string) []string {
@@ -105,7 +105,7 @@ func ParseAndVerify(mail string, mode VerificationMode, dnsClient DNSClient) (*V
 
 	return &VerifiedEmail{
 		email:     email,
-		signature: signature,
-		headers:   signedHeaders,
+		Signature: signature,
+		Headers:   signedHeaders,
 	}, nil
 }

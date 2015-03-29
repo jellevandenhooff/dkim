@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type signature struct {
+type Signature struct {
 	canonHeader   string
 	trimmedHeader string
 
@@ -17,7 +17,7 @@ type signature struct {
 	canon       *canon
 	headerNames []string
 	selector    string
-	domain      string
+	Domain      string
 	algo        *algo
 }
 
@@ -37,8 +37,8 @@ func isSignatureHeader(header string) bool {
 	return strings.HasPrefix(strings.ToLower(header), dkimPrefix)
 }
 
-func parseSignature(header string) (*signature, error) {
-	sig := new(signature)
+func parseSignature(header string) (*Signature, error) {
+	sig := new(Signature)
 
 	trimmedKVPairs := make([]string, 0)
 	canonKVPairs := make([]string, 0)
@@ -67,7 +67,7 @@ func parseSignature(header string) (*signature, error) {
 		case "s":
 			sig.selector = v
 		case "d":
-			sig.domain = v
+			sig.Domain = v
 		case "h":
 			sig.headerNames = strings.Split(v, ":")
 			for i := range sig.headerNames {
@@ -97,6 +97,6 @@ func parseSignature(header string) (*signature, error) {
 	return sig, nil
 }
 
-func (s *signature) txtRecordName() string {
-	return fmt.Sprintf("%s._domainkey.%s.", string(s.selector), string(s.domain))
+func (s *Signature) txtRecordName() string {
+	return fmt.Sprintf("%s._domainkey.%s.", string(s.selector), string(s.Domain))
 }
