@@ -100,6 +100,11 @@ func TestComplete(t *testing.T) {
 		t.Errorf("expected vandenhooff.name as domain; got %s", email.Signature.Domain)
 	}
 
+	from := email.ExtractHeader("from")
+	if len(from) != 1 || from[0] != "From: Jelle van den Hooff <jelle@vandenhooff.name>\r\n" {
+		t.Errorf("strange from header")
+	}
+
 	withBrokenSignature := strings.Replace(complete, "NCOUEepJZ6cdKYtq61hifQ9K0fimliTNcDVDBQ8C1OQToNxNGQuGifUxWQ", "foobar", 1)
 	if complete == withBrokenSignature {
 		t.Fatalf("broken test; tried to kill signature but could not find it")

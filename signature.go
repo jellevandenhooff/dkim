@@ -9,6 +9,9 @@ import (
 
 // Signature describes a DKIM signature header
 type Signature struct {
+	// Signing domain
+	Domain string
+
 	canonHeader   string
 	trimmedHeader string
 
@@ -19,9 +22,6 @@ type Signature struct {
 	headerNames []string
 	selector    string
 	algo        *algo
-
-	// Signing domain
-	Domain string
 }
 
 func stripWhitespace(in string) string {

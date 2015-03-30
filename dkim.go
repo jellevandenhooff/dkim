@@ -18,13 +18,13 @@ const (
 
 // VerifiedEmail stores the verified parts of an e-mail.
 type VerifiedEmail struct {
-	email *email
-
 	// Information on signature
 	Signature *Signature
 
 	// Signed headers (in original form)
 	Headers []string
+
+	email *email
 }
 
 func extractHeaders(headers []string, names []string) []string {
@@ -51,8 +51,8 @@ func extractHeaders(headers []string, names []string) []string {
 }
 
 // ParseAndVerify parses the e-mail, searches for a DKIM signature, verifies
-// the signature, and returns the resulting verified e-mail. Returns an error
-// if there is no valid signature.
+// the signature, and returns the resulting verified e-mail. Results in an
+// error if there is no valid signature.
 func ParseAndVerify(mail string, mode VerificationMode, dnsClient DNSClient) (*VerifiedEmail, error) {
 	email := parseEmail(mail)
 
