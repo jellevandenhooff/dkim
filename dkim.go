@@ -1,4 +1,13 @@
 // Package dkim is a pure Go DKIM verification library.
+//
+// The main use-case for the dkim package is verifying DKIM "ownership proofs" of
+// e-mail addresses. The owner of an e-mail address can sent DKIM-signed
+// e-mails, and anyone in the world can verify that those e-mail were sent
+// by the owner by checking the DKIM signature. The dkim package exposes an API
+// to verify DKIM signatures, and to inspect the signed headers of the e-mail.
+//
+// As an added feature, the dkim package supports extracting and verifying just
+// the signed headers of an e-mail. This makes ownership proofs much shorter.
 package dkim
 
 import (
