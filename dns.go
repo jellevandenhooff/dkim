@@ -7,19 +7,21 @@ import (
 	"github.com/miekg/dns"
 )
 
-// A DKIM DNSClient can look up TXT records.
+// A DNSClient can look up TXT records.
 type DNSClient interface {
 	LookupTxt(hostname string) ([]string, error)
 }
 
-// A simple DNS client uses miekg/dns to look up TXT records, and supports
-// falling back to TCP for big records.
+// SimpleDNSClient uses miekg/dns to look up TXT records, and supports falling
+// back to TCP for big records.
 //
-// Go's built-in DNS client has problems with some TXT records.
+// Exists because Go's built-in DNS client has problems with some TXT records.
 type SimpleDNSClient struct {
 	Server string
 }
 
+// LookupTxt queries the underlying server for TXT records for the given
+// hostname.
 func (s *SimpleDNSClient) LookupTxt(hostname string) ([]string, error) {
 	// build the DNS query
 	m := new(dns.Msg)
@@ -42,7 +44,7 @@ func (s *SimpleDNSClient) LookupTxt(hostname string) ([]string, error) {
 	}
 
 	// parse TXT answers into strings
-	res := make([]string, 0)
+	var res []string
 	for _, answer := range r.Answer {
 		txt, ok := answer.(*dns.TXT)
 		if !ok {

@@ -6,17 +6,25 @@ import (
 	"strings"
 )
 
+// VerificationMode configures the DKIM verification algorithm.
 type VerificationMode int
 
 const (
+	// Complete indicates that both headers and body should be verified.
 	Complete VerificationMode = iota
+	// HeadersOnly indicates that only headers should be verified.
 	HeadersOnly
 )
 
+// VerifiedEmail stores the verified parts of an e-mail.
 type VerifiedEmail struct {
-	email     *email
+	email *email
+
+	// Information on signature
 	Signature *Signature
-	Headers   []string
+
+	// Signed headers (in original form)
+	Headers []string
 }
 
 func extractHeaders(headers []string, names []string) []string {
@@ -42,6 +50,9 @@ func extractHeaders(headers []string, names []string) []string {
 	return extracted
 }
 
+// ParseAndVerify parses the e-mail, searches for a DKIM signature, verifies
+// the signature, and returns the resulting verified e-mail. Returns an error
+// if there is no valid signature.
 func ParseAndVerify(mail string, mode VerificationMode, dnsClient DNSClient) (*VerifiedEmail, error) {
 	email := parseEmail(mail)
 

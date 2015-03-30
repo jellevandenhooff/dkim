@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Signature describes a DKIM signature header
 type Signature struct {
 	canonHeader   string
 	trimmedHeader string
@@ -17,8 +18,10 @@ type Signature struct {
 	canon       *canon
 	headerNames []string
 	selector    string
-	Domain      string
 	algo        *algo
+
+	// Signing domain
+	Domain string
 }
 
 func stripWhitespace(in string) string {
@@ -40,8 +43,8 @@ func isSignatureHeader(header string) bool {
 func parseSignature(header string) (*Signature, error) {
 	sig := new(Signature)
 
-	trimmedKVPairs := make([]string, 0)
-	canonKVPairs := make([]string, 0)
+	var trimmedKVPairs []string
+	var canonKVPairs []string
 	for _, pair := range strings.Split(header[len(dkimPrefix):], ";") {
 		idx := strings.IndexByte(pair, '=')
 		if idx == -1 {
@@ -51,18 +54,29 @@ func parseSignature(header string) (*Signature, error) {
 		}
 		k, v := trimWhitespace(pair[:idx]), trimWhitespace(pair[idx+1:])
 
+		var err error
 		switch k {
 		case "b":
-			sig.signature, _ = base64.StdEncoding.DecodeString(stripWhitespace(v))
+			sig.signature, err = base64.StdEncoding.DecodeString(stripWhitespace(v))
+			if err != nil {
+				return nil, err
+			}
 		case "bh":
-			sig.bodyHash, _ = base64.StdEncoding.DecodeString(stripWhitespace(v))
+			sig.bodyHash, err = base64.StdEncoding.DecodeString(stripWhitespace(v))
+			if err != nil {
+				return nil, err
+			}
 		case "a":
 			if a, found := algos[v]; found {
 				sig.algo = a
+			} else {
+				return nil, errors.New("unknown algorithm")
 			}
 		case "c":
 			if c, found := canons[v]; found {
 				sig.canon = c
+			} else {
+				return nil, errors.New("unknown canon")
 			}
 		case "s":
 			sig.selector = v
@@ -86,10 +100,10 @@ func parseSignature(header string) (*Signature, error) {
 	}
 
 	if sig.algo == nil {
-		return nil, errors.New("missing algorithm in dkim-signature header")
+		return nil, errors.New("missing algorithm")
 	}
 	if sig.canon == nil {
-		return nil, errors.New("missing canon in dkim-signature header")
+		return nil, errors.New("missing canon")
 	}
 
 	sig.trimmedHeader = header[:len(dkimPrefix)] + strings.Join(trimmedKVPairs, ";")
