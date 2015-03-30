@@ -1,3 +1,4 @@
+// Package dkim is a pure Go DKIM verification library.
 package dkim
 
 import (
